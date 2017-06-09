@@ -27,10 +27,33 @@ namespace A6z.ObjectPools
     [MemoryDiagnoser]
     public class MemoryTests
     {
-        [Benchmark(Description = "Allocate 100B")]
-        public byte[] Allocate()
+        [Params(32, 64, 128)]
+        public int Count {get;set;}
+
+        [Params(64, 128, 256)]
+        public int Size {get;set;}
+
+        [Params(1, 2, 3)]
+        public int ReuseCount {get;set;}
+
+        [Benchmark(Description = "Allocate new objects")]
+        public void AllocateNew()
         {
-            return new byte[100];
+            for (int i = 0; i < ReuseCount; i++)
+            {
+                var library = new SampleLibrary(Count, Size);
+                library = null;
+            }
         }
+/*
+        [Benchmark(Description = "Allocate or reuse objects")]
+        void AllocateOrReuse()
+        {
+            var library = new SampleLibrary(Count, Size);
+            library = null;
+            var library2 = new SampleLibrary(Count, Size);
+            library2 = null;
+        }
+        */
     }
 }
