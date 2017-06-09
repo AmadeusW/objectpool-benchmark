@@ -5,7 +5,7 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Running;
 using System;
 
-namespace A6z.ObjectPools
+namespace Ama.ObjectPools
 {
     class Program
     {
@@ -37,23 +37,27 @@ namespace A6z.ObjectPools
         public int ReuseCount {get;set;}
 
         [Benchmark(Description = "Allocate new objects")]
-        public void AllocateNew()
+        public void AllocateAll()
         {
             for (int i = 0; i < ReuseCount; i++)
             {
-                var library = new SampleLibrary(Count, Size);
-                library = null;
+                using (var library = new SampleLibrary(Count, Size))
+                {
+
+                }
             }
         }
-/*
+
         [Benchmark(Description = "Allocate or reuse objects")]
-        void AllocateOrReuse()
+        void TryToPool()
         {
-            var library = new SampleLibrary(Count, Size);
-            library = null;
-            var library2 = new SampleLibrary(Count, Size);
-            library2 = null;
+            for (int i = 0; i < ReuseCount; i++)
+            {
+                using (var library = new PooledLibrary(Count, Size))
+                {
+
+                }
+            }
         }
-        */
     }
 }

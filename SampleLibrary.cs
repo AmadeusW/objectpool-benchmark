@@ -1,26 +1,23 @@
 using System;
 
-namespace A6z.ObjectPools
+namespace Ama.ObjectPools
 {
-    class SampleLibrary
+    class SampleLibrary : IDisposable
     {
+        SampleObject[] collection;
+
         public SampleLibrary(int count, int size)
         {
-            var collection = new SampleObject[count];
+            collection = new SampleObject[count];
             for (int i = 0; i < count; i++) 
             {
                 collection[i] = new SampleObject(size);
             }
         }
-    }
 
-    class SampleObject
-    {
-        byte[] data;
-
-        public SampleObject(int size)
+        void IDisposable.Dispose()
         {
-            data = new byte[size];
+            collection = null;
         }
     }
 }
