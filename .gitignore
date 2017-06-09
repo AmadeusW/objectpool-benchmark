@@ -3,3 +3,4 @@
 [Ll]og/
 .vs/
 .vscode/
+BenchmarkDotNet.Artifacts/
