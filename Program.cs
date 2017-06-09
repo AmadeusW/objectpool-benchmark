@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet;
+﻿using BenchmarkDotNet.Exporters.Csv;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
@@ -12,13 +12,17 @@ namespace Ama.ObjectPools
         static void Main(string[] args)
         {
             var config = ManualConfig.Create(DefaultConfig.Instance);
-            config.Set(new BenchmarkDotNet.Reports.SummaryStyle()
-            {
-                PrintUnitsInHeader = true,
-                PrintUnitsInContent = false,
-                TimeUnit = BenchmarkDotNet.Horology.TimeUnit.Millisecond,
-                SizeUnit = BenchmarkDotNet.Columns.SizeUnit.KB
-            });
+            config.Add(new MemoryDiagnoser());
+            config.Add(new CsvExporter(
+                CsvSeparator.CurrentCulture,
+                new BenchmarkDotNet.Reports.SummaryStyle
+                {
+                    PrintUnitsInHeader = true,
+                    PrintUnitsInContent = false,
+                    TimeUnit = BenchmarkDotNet.Horology.TimeUnit.Millisecond,
+                    SizeUnit = BenchmarkDotNet.Columns.SizeUnit.KB
+                }
+            ));
             config.Add(new MemoryDiagnoser());
             var summary = BenchmarkRunner.Run<MemoryTests>(config);
         }
@@ -36,8 +40,8 @@ namespace Ama.ObjectPools
         [Params(1, 2, 3)]
         public int ReuseCount {get;set;}
 
-        [Benchmark(Description = "Allocate new objects")]
-        public void AllocateAll()
+        [Benchmark(Description = "Allocate")]
+        public void Allocate()
         {
             for (int i = 0; i < ReuseCount; i++)
             {
@@ -45,11 +49,13 @@ namespace Ama.ObjectPools
                 {
 
                 }
+                GC.Collect();
             }
+            Console.WriteLine($"Allocated {SampleObject.Allocated} objects. Params: {ReuseCount} * {Count} * {Size}B");
         }
 
-        [Benchmark(Description = "Allocate or reuse objects")]
-        void TryToPool()
+        [Benchmark(Description = "Pool")]
+        public void Pool()
         {
             for (int i = 0; i < ReuseCount; i++)
             {
@@ -58,6 +64,7 @@ namespace Ama.ObjectPools
 
                 }
             }
+            Console.WriteLine($"Allocated {SampleObject.Allocated} objects. Params: {ReuseCount} * {Count} * {Size}B");
         }
     }
 }
