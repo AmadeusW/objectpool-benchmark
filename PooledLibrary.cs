@@ -7,7 +7,7 @@ namespace Ama.ObjectPools
     class PooledLibrary : IDisposable
     {
         SampleObject[] collection;
-        static List<SampleObject> pool = new List<SampleObject>();
+        static LinkedList<SampleObject> pool = new LinkedList<SampleObject>();
 
         public PooledLibrary(int count, int size)
         {
@@ -17,7 +17,7 @@ namespace Ama.ObjectPools
                 if (pool.Any())
                 {
                     collection[i] = pool.First();
-                    pool.RemoveAt(0);
+                    pool.RemoveFirst();
                 }
                 else
                 {
@@ -32,7 +32,7 @@ namespace Ama.ObjectPools
             {
                 if (collection[i] != null)
                 {
-                    pool.Add(collection[i]);
+                    pool.AddLast(collection[i]);
                     collection[i] = null;
                 }
             }
