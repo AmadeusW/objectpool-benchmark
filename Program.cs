@@ -1,8 +1,10 @@
 ﻿using BenchmarkDotNet.Exporters.Csv;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Engines;
 using System;
 
 namespace Ama.ObjectPools
@@ -28,16 +30,16 @@ namespace Ama.ObjectPools
         }
     }
 
-    [MemoryDiagnoser]
+    [SimpleJob(RunStrategy.Monitoring, launchCount: 10, warmupCount: 0, targetCount: 1)]
     public class MemoryTests
     {
-        [Params(32, 64, 128)]
+        [Params(16384, 32768, 65563, 131072)]
         public int Count {get;set;}
 
-        [Params(64, 128, 256)]
+        [Params(64, 128, 256, 512, 1024)]
         public int Size {get;set;}
 
-        [Params(1, 2, 3)]
+        [Params(1, 2, 3, 4, 5)]
         public int ReuseCount {get;set;}
 
         [Benchmark(Description = "Allocate")]
@@ -51,7 +53,9 @@ namespace Ama.ObjectPools
                 }
                 GC.Collect();
             }
-            Console.WriteLine($"Allocated {SampleObject.Allocated} objects. Params: {ReuseCount} * {Count} * {Size}B");
+             if (SampleObject.Allocated != ReuseCount * Count) {
+                 throw new InvalidOperationException($"Allocate {ReuseCount}*{Count} expected {ReuseCount*Count} objects but saw {SampleObject.Allocated}.");
+             }
         }
 
         [Benchmark(Description = "Pool")]
@@ -64,7 +68,9 @@ namespace Ama.ObjectPools
 
                 }
             }
-            Console.WriteLine($"Allocated {SampleObject.Allocated} objects. Params: {ReuseCount} * {Count} * {Size}B");
+            if (SampleObject.Allocated != Count) {
+                 throw new InvalidOperationException($"Pool {ReuseCount}*{Count} expected {Count} objects but saw {SampleObject.Allocated}.");
+            }
         }
     }
 }
