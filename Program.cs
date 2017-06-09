@@ -39,8 +39,11 @@ namespace Ama.ObjectPools
         [Params(64, 128, 256, 512, 1024)]
         public int Size {get;set;}
 
-        [Params(1, 2, 3, 4, 5)]
+        [Params(1, 2, 4, 8)]
         public int ReuseCount {get;set;}
+
+        [Params(0, 2, 4)]
+        public static int CreationCost {get;set;}
 
         [Benchmark(Description = "Allocate")]
         public void Allocate()

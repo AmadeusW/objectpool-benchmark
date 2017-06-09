@@ -7,6 +7,10 @@ namespace Ama.ObjectPools
 
         public SampleObject(int size)
         {
+            if (MemoryTests.CreationCost > 0)
+            {
+                System.Threading.Thread.Sleep(MemoryTests.CreationCost);
+            }
             data = new byte[size];
             Allocated++;
         }
