@@ -30,16 +30,16 @@ namespace Ama.ObjectPools
         }
     }
 
-    [SimpleJob(RunStrategy.Monitoring, launchCount: 4, warmupCount: 0, targetCount: 1)]
+    [SimpleJob(RunStrategy.Monitoring, launchCount: 3, warmupCount: 0, targetCount: 1)]
     public class MemoryTests
     {
-        [Params(1024, 4096, 16384, 65536)]
+        [Params(256, 1024, 4096, 16384)]
         public int Count {get;set;}
 
-        [Params(64, 256, 1024, 4096)]
+        [Params(64, 256, 1024)]
         public int Size {get;set;}
 
-        [Params(1, 2, 4, 8)]
+        [Params(1, 2, 4)]
         public int ReuseCount {get;set;}
 
         [Params(0, 2, 4)]
