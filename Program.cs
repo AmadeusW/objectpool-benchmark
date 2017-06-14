@@ -70,6 +70,7 @@ namespace Ama.ObjectPools
                 {
 
                 }
+                GC.Collect();
             }
             if (SampleObject.Allocated != Count) {
                  throw new InvalidOperationException($"Pool {ReuseCount}*{Count} expected {Count} objects but saw {SampleObject.Allocated}.");
